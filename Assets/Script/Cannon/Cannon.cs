@@ -3,13 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cannon : MonoBehaviour
+public class Cannon : MonoBehaviour,IDamageable
 {
     Rigidbody2D rb;
     Animator animator;
     [SerializeField] GameObject fireEffect;
     [SerializeField] GameObject bullet;
     event Action OnFireEvents;
+
+    [HideInInspector] public bool IsShooting;
+    float countDown;
 
     private void Awake()
     {
@@ -23,11 +26,18 @@ public class Cannon : MonoBehaviour
     }
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space)) 
-        {
-            animator.SetTrigger("Fire");
+        if (!IsShooting)
+            countDown += Time.deltaTime;
 
-        }
+        if(countDown > 2)
+            Shoot();
+
+    }
+    void Shoot()
+    {
+        animator.SetTrigger("Fire");
+        IsShooting = true;
+        countDown = 0;
     }
     void OnTriggerEffect()
     {
@@ -40,5 +50,9 @@ public class Cannon : MonoBehaviour
     void OnTriggerFireEvents()
     {
         OnFireEvents();
+    }
+    public void TakeDamage(float damage)
+    {
+        
     }
 }
